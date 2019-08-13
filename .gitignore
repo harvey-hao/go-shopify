@@ -2,3 +2,5 @@
 coverage.*
 .vscode
 .idea
+go.mod
+go.sum
