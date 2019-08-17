@@ -19,6 +19,9 @@ type ProductService interface {
 	Update(Product) (*Product, error)
 	Delete(int64) error
 
+	//add published product or unPublished product
+	PublishOrUnPublish(int64, bool) (*Product, error)
+
 	// MetafieldsService used for Product resource to communicate with Metafields resource
 	MetafieldsService
 }
@@ -39,7 +42,7 @@ type Product struct {
 	Handle                         string          `json:"handle,omitempty"`
 	CreatedAt                      *time.Time      `json:"created_at,omitempty"`
 	UpdatedAt                      *time.Time      `json:"updated_at,omitempty"`
-	PublishedAt                    *time.Time      `json:"published_at"`
+	PublishedAt                    *time.Time      `json:"published_at,omitempty"`
 	PublishedScope                 string          `json:"published_scope,omitempty"`
 	Tags                           string          `json:"tags,omitempty"`
 	Options                        []ProductOption `json:"options,omitempty"`
@@ -151,4 +154,27 @@ func (s *ProductServiceOp) UpdateMetafield(productID int64, metafield Metafield)
 func (s *ProductServiceOp) DeleteMetafield(productID int64, metafieldID int64) error {
 	metafieldService := &MetafieldServiceOp{client: s.client, resource: productsResourceName, resourceID: productID}
 	return metafieldService.Delete(metafieldID)
+}
+
+// Publish or UnPublish  an existing product
+func (s *ProductServiceOp) PublishOrUnPublish(productID int64, isPublish bool) (*Product, error) {
+	path := fmt.Sprintf("%s/%s/%d.json", globalApiPathPrefix, productsBasePath, productID)
+	if isPublish {
+		now := time.Now()
+		wrappedData := ProductResource{Product: &Product{ID: productID, PublishedAt: &now}}
+		resource := new(ProductResource)
+		err := s.client.Put(path, wrappedData, resource)
+		return resource.Product, err
+	} else {
+		var tempProduct struct {
+			ID          int64      `json:"id,omitempty"`
+			PublishedAt *time.Time `json:"published_at"` //do not ingore null value
+		}
+		tempProduct.ID = productID
+		tempProduct.PublishedAt = nil
+		resource := new(ProductResource)
+		err := s.client.Put(path, tempProduct, resource)
+		return resource.Product, err
+	}
+
 }
