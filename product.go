@@ -75,6 +75,16 @@ type ProductsResource struct {
 	Products []Product `json:"products"`
 }
 
+//for publish
+type ProductPublish struct {
+	ID          int64      `json:"id,omitempty"`
+	PublishedAt *time.Time `json:"published_at"` //do not ingore null value
+}
+
+type ProductPublishResource struct {
+	Product *ProductPublish `json:"product"`
+}
+
 // List products
 func (s *ProductServiceOp) List(options interface{}) ([]Product, error) {
 	path := fmt.Sprintf("%s/%s.json", globalApiPathPrefix, productsBasePath)
@@ -165,16 +175,13 @@ func (s *ProductServiceOp) PublishOrUnPublish(productID int64, isPublish bool) (
 		resource := new(ProductResource)
 		err := s.client.Put(path, wrappedData, resource)
 		return resource.Product, err
+
 	} else {
-		var tempProduct struct {
-			ID          int64      `json:"id,omitempty"`
-			PublishedAt *time.Time `json:"published_at"` //do not ingore null value
-		}
-		tempProduct.ID = productID
-		tempProduct.PublishedAt = nil
+		wrappedData := ProductPublishResource{Product: &ProductPublish{ID: productID, PublishedAt: nil}}
 		resource := new(ProductResource)
-		err := s.client.Put(path, tempProduct, resource)
+		err := s.client.Put(path, wrappedData, resource)
 		return resource.Product, err
+
 	}
 
 }
