@@ -10,6 +10,7 @@ import (
 // See: https://help.shopify.com/api/reference/shop
 type ShopService interface {
 	Get(options interface{}) (*Shop, error)
+	GetShippingZones(options interface{}) ([]*ShippingZone, error)
 }
 
 // ShopServiceOp handles communication with the shop related methods of the
@@ -75,9 +76,70 @@ type ShopResource struct {
 	Shop *Shop `json:"shop"`
 }
 
+type ShippingZoneResource struct {
+	ShippingZones []*ShippingZone `json:"shipping_zones"`
+}
+
+type ShippingZone struct {
+	ID                       int64                              `json:"id"`
+	Name                     string                             `json:"name"`
+	ProfileId                string                             `json:"profile_id"`
+	LocationGroupId          string                             `json:"location_group_id"`
+	Countries                []*ShippingCountry                 `json:"countries"`
+	Provinces                []*ShippingProvince                `json:"provinces"`
+	PriceBasedShippingRates  []*ShippingPriceBasedShippingRate  `json:"price_based_shipping_rates"`
+	WeightBasedShippingRates []*ShippingWeightBasedShippingRate `json:"weight_based_shipping_rates"`
+}
+
+type ShippingCountry struct {
+	ID             int64               `json:"id"`
+	ShippingZoneId int64               `json:"shipping_zone_id"`
+	Name           string              `json:"name"`
+	Tax            float64             `json:"tax"`
+	Code           string              `json:"code"`
+	TaxName        string              `json:"tax_name"`
+	Provinces      []*ShippingProvince `json:"provinces"`
+}
+
+type ShippingProvince struct {
+	ID             int64   `json:"id"`
+	Code           string  `json"code"`
+	CountryId      int64   `json:"country_id"`
+	ShippingZoneId int64   `json:"shipping_zone_id"`
+	Name           string  `json:"name"`
+	Tax            float64 `json:"tax"`
+	TaxName        string  `json:"tax_name"`
+	TaxType        string  `json:"tax_type"`
+	TaxPercentage  float64 `json:"tax_percentage"`
+}
+
+type ShippingPriceBasedShippingRate struct {
+	ID               int64   `json:"id"`
+	Name             string  `json:"name"`
+	Price            float64 `json:"price"`
+	ShippingZoneId   int64   `json:"shipping_zone_id"`
+	MinOrderSubtotal float64 `json:"min_order_subtotal"`
+	MaxOrderSubtotal float64 `json:"max_order_subtotal"`
+}
+type ShippingWeightBasedShippingRate struct {
+	ID             int64   `json:"id"`
+	Name           string  `json:"name"`
+	Price          float64 `json:"price"`
+	ShippingZoneId int64   `json:"shipping_zone_id"`
+	WeightLow      float64 `json:"weight_low"`
+	WeightHigh     float64 `json:"weight_high"`
+}
+
 // Get shop
 func (s *ShopServiceOp) Get(options interface{}) (*Shop, error) {
 	resource := new(ShopResource)
 	err := s.client.Get(fmt.Sprintf("%s/shop.json", globalApiPathPrefix), resource, options)
 	return resource.Shop, err
+}
+
+// Get Shipping zones
+func (s *ShopServiceOp) GetShippingZones(options interface{}) ([]*ShippingZone, error) {
+	resource := new(ShippingZoneResource)
+	err := s.client.Get(fmt.Sprintf("%s/shipping_zones.json", globalApiPathPrefix), resource, options)
+	return resource.ShippingZones, err
 }
