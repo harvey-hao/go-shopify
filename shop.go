@@ -3,6 +3,8 @@ package goshopify
 import (
 	"fmt"
 	"time"
+
+	"github.com/shopspring/decimal"
 )
 
 // ShopService is an interface for interfacing with the shop endpoint of the
@@ -95,31 +97,31 @@ type ShippingCountry struct {
 	ID             int64               `json:"id"`
 	ShippingZoneId int64               `json:"shipping_zone_id"`
 	Name           string              `json:"name"`
-	Tax            float64             `json:"tax"`
+	Tax            *decimal.Decimal    `json:"tax,omitempty"`
 	Code           string              `json:"code"`
 	TaxName        string              `json:"tax_name"`
 	Provinces      []*ShippingProvince `json:"provinces"`
 }
 
 type ShippingProvince struct {
-	ID             int64   `json:"id"`
-	Code           string  `json"code"`
-	CountryId      int64   `json:"country_id"`
-	ShippingZoneId int64   `json:"shipping_zone_id"`
-	Name           string  `json:"name"`
-	Tax            float64 `json:"tax"`
-	TaxName        string  `json:"tax_name"`
-	TaxType        string  `json:"tax_type"`
-	TaxPercentage  float64 `json:"tax_percentage"`
+	ID             int64            `json:"id"`
+	Code           string           `json"code"`
+	CountryId      int64            `json:"country_id"`
+	ShippingZoneId int64            `json:"shipping_zone_id"`
+	Name           string           `json:"name"`
+	Tax            *decimal.Decimal `json:"tax,omitempty"`
+	TaxName        string           `json:"tax_name"`
+	TaxType        string           `json:"tax_type"`
+	TaxPercentage  *decimal.Decimal `json:"tax_percentage,omitempty"`
 }
 
 type ShippingPriceBasedShippingRate struct {
-	ID               int64   `json:"id"`
-	Name             string  `json:"name"`
-	Price            float64 `json:"price"`
-	ShippingZoneId   int64   `json:"shipping_zone_id"`
-	MinOrderSubtotal float64 `json:"min_order_subtotal"`
-	MaxOrderSubtotal float64 `json:"max_order_subtotal"`
+	ID               int64            `json:"id"`
+	Name             string           `json:"name"`
+	Price            *decimal.Decimal `json:"price,omitempty"`
+	ShippingZoneId   int64            `json:"shipping_zone_id"`
+	MinOrderSubtotal *decimal.Decimal `json:"min_order_subtotal,omitempty"`
+	MaxOrderSubtotal *decimal.Decimal `json:"max_order_subtotal,omitempty"`
 }
 type ShippingWeightBasedShippingRate struct {
 	ID             int64   `json:"id"`
