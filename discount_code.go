@@ -1,9 +1,7 @@
 package goshopify
 
 import (
-	"errors"
 	"fmt"
-	"strings"
 	"time"
 )
 
@@ -89,24 +87,32 @@ func (s *DiscountCodeServiceOp) Delete(priceRuleID int64, discountCodeID int64) 
 // Get Price rule by discount code
 func (s *DiscountCodeServiceOp) GetPriceRuleByCode(code string) (*PriceRule, error) {
 	path := fmt.Sprintf("%s/discount_codes/lookup.json?code=%s", globalApiPathPrefix, code)
-	header, err := s.client.GetWithHeader(path, nil, nil)
+	resource := new(DiscountCodeResource)
+	err := s.client.Get(path, resource, nil)
 	if err == nil {
-		location := header.Get("Location")
-		if location != "" {
-			location = strings.ReplaceAll(location, "admin", globalApiPathPrefix)
-			resource := new(DiscountCodeResource)
-			err := s.client.Get(location, resource, nil)
-			if err == nil {
-				return s.client.PriceRule.Get(resource.PriceRuleDiscountCode.PriceRuleID)
-			} else {
-				return nil, err
-			}
-		} else {
-			return nil, errors.New("can't find location url.")
-		}
-
+		return s.client.PriceRule.Get(resource.PriceRuleDiscountCode.PriceRuleID)
 	} else {
 		return nil, err
 	}
+
+	// header, err := s.client.GetWithHeader(path, nil, nil)
+	// if err == nil {
+	// 	location := header.Get("Location")
+	// 	if location != "" {
+	// 		location = strings.ReplaceAll(location, "admin", globalApiPathPrefix)
+	// 		resource := new(DiscountCodeResource)
+	// 		err := s.client.Get(location, resource, nil)
+	// 		if err == nil {
+	// 			return s.client.PriceRule.Get(resource.PriceRuleDiscountCode.PriceRuleID)
+	// 		} else {
+	// 			return nil, err
+	// 		}
+	// 	} else {
+	// 		return nil, errors.New("can't find location url.")
+	// 	}
+
+	// } else {
+	// 	return nil, err
+	// }
 
 }
