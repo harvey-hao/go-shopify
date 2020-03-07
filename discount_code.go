@@ -95,24 +95,4 @@ func (s *DiscountCodeServiceOp) GetPriceRuleByCode(code string) (*PriceRule, err
 		return nil, err
 	}
 
-	// header, err := s.client.GetWithHeader(path, nil, nil)
-	// if err == nil {
-	// 	location := header.Get("Location")
-	// 	if location != "" {
-	// 		location = strings.ReplaceAll(location, "admin", globalApiPathPrefix)
-	// 		resource := new(DiscountCodeResource)
-	// 		err := s.client.Get(location, resource, nil)
-	// 		if err == nil {
-	// 			return s.client.PriceRule.Get(resource.PriceRuleDiscountCode.PriceRuleID)
-	// 		} else {
-	// 			return nil, err
-	// 		}
-	// 	} else {
-	// 		return nil, errors.New("can't find location url.")
-	// 	}
-
-	// } else {
-	// 	return nil, err
-	// }
-
 }
