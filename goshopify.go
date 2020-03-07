@@ -81,6 +81,7 @@ type Client struct {
 	Location                   LocationService
 	DiscountCode               DiscountCodeService
 	InventoryItem              InventoryItemService
+	PriceRule                  PriceRuleService
 }
 
 // A general response error that follows a similar layout to Shopify's response
@@ -238,6 +239,7 @@ func NewClient(app App, shopName, token string, opts ...Option) *Client {
 	c.Location = &LocationServiceOp{client: c}
 	c.DiscountCode = &DiscountCodeServiceOp{client: c}
 	c.InventoryItem = &InventoryItemServiceOp{client: c}
+	c.PriceRule = &PriceRuleServiceOp{client: c}
 
 	// apply any options
 	for _, opt := range opts {
@@ -271,6 +273,29 @@ func (c *Client) Do(req *http.Request, v interface{}) error {
 	}
 
 	return nil
+}
+
+func (c *Client) DoWithHeader(req *http.Request, v interface{}) (*http.Header, error) {
+	resp, err := c.Client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	err = CheckResponseError(resp)
+	if err != nil {
+		return nil, err
+	}
+
+	if v != nil {
+		decoder := json.NewDecoder(resp.Body)
+		err := decoder.Decode(&v)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &resp.Header, nil
 }
 
 func wrapSpecificError(r *http.Response, err ResponseError) error {
@@ -428,6 +453,20 @@ func (c *Client) CreateAndDo(method, path string, data, options, resource interf
 	return nil
 }
 
+func (c *Client) CreateAndDoWithHeader(method, path string, data, options, resource interface{}) (*http.Header, error) {
+	req, err := c.NewRequest(method, path, data, options)
+	if err != nil {
+		return nil, err
+	}
+
+	header, err := c.DoWithHeader(req, resource)
+	if err != nil {
+		return nil, err
+	}
+
+	return header, nil
+}
+
 // Get performs a GET request for the given path and saves the result in the
 // given resource.
 func (c *Client) Get(path string, resource, options interface{}) error {
@@ -449,4 +488,8 @@ func (c *Client) Put(path string, data, resource interface{}) error {
 // Delete performs a DELETE request for the given path
 func (c *Client) Delete(path string) error {
 	return c.CreateAndDo("DELETE", path, nil, nil, nil)
+}
+
+func (c *Client) GetWithHeader(path string, resource, options interface{}) (*http.Header, error) {
+	return c.CreateAndDoWithHeader("GET", path, nil, options, resource)
 }

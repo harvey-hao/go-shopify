@@ -1,7 +1,9 @@
 package goshopify
 
 import (
+	"errors"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -16,6 +18,7 @@ type DiscountCodeService interface {
 	List(int64) ([]PriceRuleDiscountCode, error)
 	Get(int64, int64) (*PriceRuleDiscountCode, error)
 	Delete(int64, int64) error
+	GetPriceRuleByCode(string) (*PriceRule, error)
 }
 
 // DiscountCodeServiceOp handles communication with the discount code
@@ -81,4 +84,29 @@ func (s *DiscountCodeServiceOp) Get(priceRuleID int64, discountCodeID int64) (*P
 // Delete a discount code
 func (s *DiscountCodeServiceOp) Delete(priceRuleID int64, discountCodeID int64) error {
 	return s.client.Delete(fmt.Sprintf("%s/"+discountCodeBasePath+"/%d.json", globalApiPathPrefix, priceRuleID, discountCodeID))
+}
+
+// Get Price rule by discount code
+func (s *DiscountCodeServiceOp) GetPriceRuleByCode(code string) (*PriceRule, error) {
+	path := fmt.Sprintf("%s/discount_codes/lookup.json?code=%s", globalApiPathPrefix, code)
+	header, err := s.client.GetWithHeader(path, nil, nil)
+	if err == nil {
+		location := header.Get("Location")
+		if location != "" {
+			location = strings.ReplaceAll(location, "admin", globalApiPathPrefix)
+			resource := new(DiscountCodeResource)
+			err := s.client.Get(location, resource, nil)
+			if err == nil {
+				return s.client.PriceRule.Get(resource.PriceRuleDiscountCode.PriceRuleID)
+			} else {
+				return nil, err
+			}
+		} else {
+			return nil, errors.New("can't find location url.")
+		}
+
+	} else {
+		return nil, err
+	}
+
 }
