@@ -15,6 +15,7 @@ type DiscountCodeService interface {
 	Update(int64, PriceRuleDiscountCode) (*PriceRuleDiscountCode, error)
 	List(int64) ([]PriceRuleDiscountCode, error)
 	Get(int64, int64) (*PriceRuleDiscountCode, error)
+	GetByCode(string, int64) (*PriceRuleDiscountCode, error)
 	Delete(int64, int64) error
 	GetPriceRuleByCode(string) (*PriceRule, error)
 }
@@ -74,6 +75,14 @@ func (s *DiscountCodeServiceOp) List(priceRuleID int64) ([]PriceRuleDiscountCode
 // Get a single discount code
 func (s *DiscountCodeServiceOp) Get(priceRuleID int64, discountCodeID int64) (*PriceRuleDiscountCode, error) {
 	path := fmt.Sprintf("%s/"+discountCodeBasePath+"/%d.json", globalApiPathPrefix, priceRuleID, discountCodeID)
+	resource := new(DiscountCodeResource)
+	err := s.client.Get(path, resource, nil)
+	return resource.PriceRuleDiscountCode, err
+}
+
+// Get a single discount code by code
+func (s *DiscountCodeServiceOp) GetByCode(code string, discountCodeID int64) (*PriceRuleDiscountCode, error) {
+	path := fmt.Sprintf("%s/discount_codes/lookup.json?code=%s", globalApiPathPrefix, code)
 	resource := new(DiscountCodeResource)
 	err := s.client.Get(path, resource, nil)
 	return resource.PriceRuleDiscountCode, err
