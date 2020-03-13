@@ -124,12 +124,12 @@ type ShippingPriceBasedShippingRate struct {
 	MaxOrderSubtotal *decimal.Decimal `json:"max_order_subtotal,omitempty"`
 }
 type ShippingWeightBasedShippingRate struct {
-	ID             int64   `json:"id"`
-	Name           string  `json:"name"`
-	Price          float64 `json:"price"`
-	ShippingZoneId int64   `json:"shipping_zone_id"`
-	WeightLow      float64 `json:"weight_low"`
-	WeightHigh     float64 `json:"weight_high"`
+	ID             int64            `json:"id"`
+	Name           string           `json:"name"`
+	Price          *decimal.Decimal `json:"price"`
+	ShippingZoneId int64            `json:"shipping_zone_id"`
+	WeightLow      float64          `json:"weight_low"`
+	WeightHigh     float64          `json:"weight_high"`
 }
 
 // Get shop
