@@ -133,6 +133,10 @@ type Order struct {
 	CheckoutID            int64            `json:"checkout_id,omitempty"`
 	ContactEmail          string           `json:"contact_email,omitempty"`
 	Metafields            []Metafield      `json:"metafields,omitempty"`
+	//Whether to send an order confirmation to the customer
+	SendReceipt bool `json:"send_receipt,omitempty"`
+	//Whether to send a shipping confirmation to the customer.
+	SendFulfillmentReceipt bool `json:"send_fulfillment_receipt,omitempty"`
 }
 
 type Address struct {
