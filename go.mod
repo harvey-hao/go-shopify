@@ -1,4 +1,4 @@
-module github.com/0RaymondJiang0/go-shopify/v2
+module github.com/0RaymondJiang0/go-shopify
 
 go 1.12
 
