@@ -262,7 +262,11 @@ type Transaction struct {
 }
 
 type TransactionReceipt struct {
-	TransactionId string `json:"transaction_id"`
+	Token                   string `json:"token,omitempty"`
+	TransactionId           string `json:"transaction_id,omitempty"`
+	PaypalAccountId         string `json:"pay_pal_account_id,omitempty"`
+	SecureMerchantAccountId string `json:"secure_merchant_account_id,omitempty"`
+	PaymentStatus           string `json:"payment_status,omitempty"`
 }
 
 type ClientDetails struct {
