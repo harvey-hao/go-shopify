@@ -48,7 +48,7 @@ type CollectionListingsResource struct {
 	Collections []Collection `json:"collection_listings"`
 }
 
-// List collects
+// List collections
 func (s *CollectionListingServiceOp) List(options interface{}) ([]Collection, error) {
 	path := fmt.Sprintf("%s/%s.json", globalApiPathPrefix, collectionListingsBasePath)
 	resource := new(CollectionListingsResource)
@@ -56,7 +56,7 @@ func (s *CollectionListingServiceOp) List(options interface{}) ([]Collection, er
 	return resource.Collections, err
 }
 
-// Get individual custom collection
+// Get individual collection
 func (s *CollectionListingServiceOp) Get(collectionID int64, options interface{}) (*Collection, error) {
 	path := fmt.Sprintf("%s/%s/%d.json", globalApiPathPrefix, collectionListingsBasePath, collectionID)
 	resource := new(CollectionListingResource)
