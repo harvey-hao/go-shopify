@@ -137,6 +137,8 @@ type Order struct {
 	SendReceipt bool `json:"send_receipt,omitempty"`
 	//Whether to send a shipping confirmation to the customer.
 	SendFulfillmentReceipt bool `json:"send_fulfillment_receipt,omitempty"`
+
+	InventoryBehaviour string `json:"inventory_behaviour,omitempty"`
 }
 
 type Address struct {
