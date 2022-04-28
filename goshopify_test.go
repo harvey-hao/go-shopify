@@ -13,7 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"gopkg.in/jarcoal/httpmock.v1"
+	//"gopkg.in/jarcoal/httpmock"
+	"github.com/jarcoal/httpmock"
 )
 
 const (
